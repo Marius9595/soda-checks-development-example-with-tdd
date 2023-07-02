@@ -22,11 +22,9 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         self.scan.add_sodacl_yaml_file(path_yml)
 
     def test_should_detect_metric_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.metric]),
+            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.metric]),
         )
         self.scan.execute()
 
@@ -37,33 +35,30 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         return check_failures
 
     def test_should_detect_country_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.country]),
+            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.country]),
         )
         self.scan.execute()
 
         assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
-    def test_should_detect_value_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
+    def irrelevant_dataset(self):
+        return CountriesMetricsStubBuilder().add_entry().build()
 
+    def test_should_detect_value_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.value]),
+            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.value]),
         )
         self.scan.execute()
 
         assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
     def test_should_detect_unit_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.unit]),
+            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.unit]),
         )
         self.scan.execute()
 
@@ -71,11 +66,9 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         assert_that(check_failures).contains_only("Schema has the required columns")
 
     def test_should_detect_year_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.year]),
+            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.year]),
         )
         self.scan.execute()
 
