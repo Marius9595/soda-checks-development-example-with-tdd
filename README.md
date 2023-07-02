@@ -1,4 +1,14 @@
-# 🐍 Python TDD Boilerplate
+# SODA Checks development example with Test-Driven-Development
+
+## Example: Metrics Dataset of Countries
+| Metric                                   | Brief Description                                    | Range       | Unit   |
+|-----------------------------------------|------------------------------------------------------|-------------|--------|
+| Gross Domestic Product (GDP)             | Total value of goods and services produced           | Variable    | dolars |
+| Unemployment Rate                        | Percentage of unemployed individuals                 | 0-100       | %      |
+| Gini Index                               | Measure of income inequality                         | 0-1         | -      |
+| Life Expectancy                          | Average age at which people live                     | Variable    | years  |
+| Corruption Perception Index              | Measure of corruption perception                     | 0-100       | -      |
+
 
 ## 🧑‍🏭 Setup
 
