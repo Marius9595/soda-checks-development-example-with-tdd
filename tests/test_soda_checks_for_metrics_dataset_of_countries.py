@@ -96,3 +96,21 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
 
         check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Dataset has just calculated metrics")
+
+    def test_should_detect_values_of_percentage_metrics_are_greater_than_upper_limit(self):
+        countries_metrics = (
+            CountriesMetricsStubBuilder()
+            .add_entry(metric="unemployment_rate", value=100.1, unit="percentage")
+            .build()
+        )
+
+        self.scan.add_pandas_dataframe(
+            dataset_name=self.dataset_identifier,
+            pandas_df=countries_metrics,
+        )
+        self.scan.execute()
+
+        check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
+        assert_that(check_failures).contains_only(
+            "Values of percentage metrics are in range"
+        )
