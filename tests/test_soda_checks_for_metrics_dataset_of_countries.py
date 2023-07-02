@@ -56,3 +56,15 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
 
         check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Schema has the required columns")
+
+    def test_should_detect_unit_column_is_not_in_schema(self):
+        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
+
+        self.scan.add_pandas_dataframe(
+            dataset_name=self.dataset_identifier,
+            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.unit]),
+        )
+        self.scan.execute()
+
+        check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
+        assert_that(check_failures).contains_only("Schema has the required columns")
