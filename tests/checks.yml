@@ -3,3 +3,15 @@ checks for ${dataset_name}:
       name: Schema has the required columns
       fail:
         when required column missing: [country, year, metric, value, unit]
+
+  - failed rows:
+      name: "Dataset has just calculated metrics"
+      fail query: |
+        SELECT * FROM ${dataset_name}
+        WHERE metric NOT IN (
+          'gini_index',
+          'life_expectancy',
+          'corruption_perception_index',
+          'unemployment_rate',
+          'gross_domestic_product'
+        )
