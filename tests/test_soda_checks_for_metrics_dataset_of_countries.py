@@ -80,3 +80,19 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
 
         check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Schema has the required columns")
+
+    def test_should_allow_just_metrics_calculated(self):
+        countries_metrics = (
+            CountriesMetricsStubBuilder()
+            .add_entry(metric="invalid metric")
+            .build()
+        )
+
+        self.scan.add_pandas_dataframe(
+            dataset_name=self.dataset_identifier,
+            pandas_df=countries_metrics,
+        )
+        self.scan.execute()
+
+        check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
+        assert_that(check_failures).contains_only("Dataset has just calculated metrics")
