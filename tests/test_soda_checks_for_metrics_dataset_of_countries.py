@@ -21,7 +21,6 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         path_yml = "checks.yml"
         scan.add_sodacl_yaml_file(path_yml)
 
-
         scan.add_pandas_dataframe(
             dataset_name=dataset_identifier,
             pandas_df=countries_metrics.drop(columns=[CountriesMetrics.metric]),
@@ -31,4 +30,25 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Schema has the required columns")
 
+    def test_should_detect_country_column_is_not_in_schema(self):
+        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
+        scan = Scan()
+        scan.set_data_source_name("dask")
+        dataset_identifier = "countries_metrics"
+        scan.add_variables(
+            {
+                "dataset_name": dataset_identifier,
+            }
+        )
+        path_yml = "checks.yml"
+        scan.add_sodacl_yaml_file(path_yml)
+
+        scan.add_pandas_dataframe(
+            dataset_name=dataset_identifier,
+            pandas_df=countries_metrics.drop(columns=[CountriesMetrics.country]),
+        )
+        scan.execute()
+
+        check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
+        assert_that(check_failures).contains_only("Schema has the required columns")
 
