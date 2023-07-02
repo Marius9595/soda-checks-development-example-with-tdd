@@ -8,47 +8,39 @@ from tests.countries_metrics_stub_builder import CountriesMetricsStubBuilder
 
 
 class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
-    def test_should_detect_metric_column_is_not_in_schema(self):
-        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-        scan = Scan()
-        scan.set_data_source_name("dask")
-        dataset_identifier = "countries_metrics"
-        scan.add_variables(
+
+    def setUp(self) -> None:
+        self.scan = Scan()
+        self.scan.set_data_source_name("dask")
+        self.dataset_identifier = "countries_metrics"
+        self.scan.add_variables(
             {
-                "dataset_name": dataset_identifier,
+                "dataset_name": self.dataset_identifier,
             }
         )
         path_yml = "checks.yml"
-        scan.add_sodacl_yaml_file(path_yml)
+        self.scan.add_sodacl_yaml_file(path_yml)
 
-        scan.add_pandas_dataframe(
-            dataset_name=dataset_identifier,
+    def test_should_detect_metric_column_is_not_in_schema(self):
+        countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
+
+        self.scan.add_pandas_dataframe(
+            dataset_name=self.dataset_identifier,
             pandas_df=countries_metrics.drop(columns=[CountriesMetrics.metric]),
         )
-        scan.execute()
+        self.scan.execute()
 
-        check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
+        check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Schema has the required columns")
 
     def test_should_detect_country_column_is_not_in_schema(self):
         countries_metrics = CountriesMetricsStubBuilder().add_entry().build()
-        scan = Scan()
-        scan.set_data_source_name("dask")
-        dataset_identifier = "countries_metrics"
-        scan.add_variables(
-            {
-                "dataset_name": dataset_identifier,
-            }
-        )
-        path_yml = "checks.yml"
-        scan.add_sodacl_yaml_file(path_yml)
 
-        scan.add_pandas_dataframe(
-            dataset_name=dataset_identifier,
+        self.scan.add_pandas_dataframe(
+            dataset_name=self.dataset_identifier,
             pandas_df=countries_metrics.drop(columns=[CountriesMetrics.country]),
         )
-        scan.execute()
+        self.scan.execute()
 
-        check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
+        check_failures = list(map(lambda check: check.name, self.scan.get_checks_fail()))
         assert_that(check_failures).contains_only("Schema has the required columns")
-
