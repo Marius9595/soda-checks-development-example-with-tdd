@@ -15,3 +15,9 @@ checks for ${dataset_name}:
           'unemployment_rate',
           'gross_domestic_product'
         )
+
+  - failed rows:
+      name: "Values of percentage metrics are in range"
+      fail query: |
+        SELECT * FROM ${dataset_name}
+        WHERE unit = 'percentage' AND (value > 100)
