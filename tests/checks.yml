@@ -1,0 +1,5 @@
+checks for ${dataset_name}:
+  - schema:
+      name: Schema has the required columns
+      fail:
+        when required column missing: [metric]
