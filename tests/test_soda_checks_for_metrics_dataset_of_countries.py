@@ -7,6 +7,15 @@ from src.CountriesMetrics import CountriesMetrics
 from tests.countries_metrics_stub_builder import CountriesMetricsStubBuilder
 
 
+def check_failures_of(scan: Scan) -> list[str]:
+    check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
+    return check_failures
+
+
+def irrelevant_dataset():
+    return CountriesMetricsStubBuilder().add_entry().build()
+
+
 class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
 
     def setUp(self) -> None:
@@ -24,55 +33,48 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
     def test_should_detect_metric_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.metric]),
+            pandas_df=irrelevant_dataset().drop(columns=[CountriesMetrics.metric]),
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
-
-    def check_failures_of(self, scan: Scan) -> list[str]:
-        check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
-        return check_failures
+        assert_that(check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
     def test_should_detect_country_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.country]),
+            pandas_df=irrelevant_dataset().drop(columns=[CountriesMetrics.country]),
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
-
-    def irrelevant_dataset(self):
-        return CountriesMetricsStubBuilder().add_entry().build()
+        assert_that(check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
     def test_should_detect_value_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.value]),
+            pandas_df=irrelevant_dataset().drop(columns=[CountriesMetrics.value]),
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
+        assert_that(check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
     def test_should_detect_unit_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.unit]),
+            pandas_df=irrelevant_dataset().drop(columns=[CountriesMetrics.unit]),
         )
         self.scan.execute()
 
-        check_failures = self.check_failures_of(self.scan)
+        check_failures = check_failures_of(self.scan)
         assert_that(check_failures).contains_only("Schema has the required columns")
 
     def test_should_detect_year_column_is_not_in_schema(self):
         self.scan.add_pandas_dataframe(
             dataset_name=self.dataset_identifier,
-            pandas_df=self.irrelevant_dataset().drop(columns=[CountriesMetrics.year]),
+            pandas_df=irrelevant_dataset().drop(columns=[CountriesMetrics.year]),
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only("Schema has the required columns")
+        assert_that(check_failures_of(self.scan)).contains_only("Schema has the required columns")
 
     def test_should_allow_just_metrics_calculated(self):
         countries_metrics = (
@@ -87,7 +89,7 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only("Dataset has just calculated metrics")
+        assert_that(check_failures_of(self.scan)).contains_only("Dataset has just calculated metrics")
 
     def test_should_detect_values_of_percentage_metrics_are_greater_than_upper_limit(self):
         countries_metrics = (
@@ -102,7 +104,7 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only(
+        assert_that(check_failures_of(self.scan)).contains_only(
             "Values of percentage metrics are in range"
         )
 
@@ -119,6 +121,6 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         )
         self.scan.execute()
 
-        assert_that(self.check_failures_of(self.scan)).contains_only(
+        assert_that(check_failures_of(self.scan)).contains_only(
             "Values of percentage metrics are in range"
         )
