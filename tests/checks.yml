@@ -20,4 +20,4 @@ checks for ${dataset_name}:
       name: "Values of percentage metrics are in range"
       fail query: |
         SELECT * FROM ${dataset_name}
-        WHERE unit = 'percentage' AND (value > 100)
+        WHERE unit = 'percentage' AND (value < 0 OR value > 100)
