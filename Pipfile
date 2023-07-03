@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+soda-core-pandas-dask = "~=3.0.4"
 
 [dev-packages]
 assertpy = "1.1"
