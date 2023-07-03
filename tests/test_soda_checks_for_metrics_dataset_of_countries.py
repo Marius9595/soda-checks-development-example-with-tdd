@@ -6,6 +6,8 @@ from soda.scan import Scan
 from src.CountriesMetrics import CountriesMetrics
 from tests.countries_metrics_stub_builder import CountriesMetricsStubBuilder
 
+UPPER_LIMIT_PERCENTAGE = 100
+LOWER_LIMIT_PERCENTAGE = 0
 
 def check_failures_found_by(scan: Scan) -> list[str]:
     check_failures = list(map(lambda check: check.name, scan.get_checks_fail()))
@@ -25,6 +27,8 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
         self.scan.add_variables(
             {
                 "dataset_name": self.dataset_identifier,
+                "upper_limit_percentage": UPPER_LIMIT_PERCENTAGE,
+                "lower_limit_percentage": LOWER_LIMIT_PERCENTAGE,
             }
         )
         path_yml = "checks.yml"
@@ -94,7 +98,7 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
     def test_should_detect_values_of_percentage_metrics_are_greater_than_upper_limit(self):
         countries_metrics = (
             CountriesMetricsStubBuilder()
-            .add_entry(metric="unemployment_rate", value=100.1, unit="percentage")
+            .add_entry(metric="unemployment_rate", value=UPPER_LIMIT_PERCENTAGE + 1, unit="percentage")
             .build()
         )
 
@@ -111,7 +115,7 @@ class TestSodaChecksForMetricsDatasetOfCountries(TestCase):
     def test_should_detect_values_of_percentage_metrics_are_less_than_lower_limit(self):
         countries_metrics = (
             CountriesMetricsStubBuilder()
-            .add_entry(metric="unemployment_rate", value=-0.1, unit="percentage")
+            .add_entry(metric="unemployment_rate", value=LOWER_LIMIT_PERCENTAGE - 1, unit="percentage")
             .build()
         )
 
